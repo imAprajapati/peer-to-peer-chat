@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat UI</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="message-container">
+          <!-- <div class="message received">
+            <p>Hello, how can I help you?</p>
+        </div> -->
+        <!-- <div class="message sent">
+            <p>I'm looking for some information.</p>
+        </div> -->
+        </div>
+        <!-- More messages here -->
+        
+        <div class="input-container">
+            <input type="text" autofocus id="messageInput" placeholder="Type your message...">
+            <button id="sendmessage">Send</button>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+<script>
+  // const userId = prompt('Enter your user id');
+  const socket = io('https://ng1c39qr-3000.inc1.devtunnels.ms/',{
+    query:{
+      // userId
+    }
+  });
+  socket.on('connect', () => {
+    console.log('Connected to server');
+  });
+  function sendMessage(event){
+    const message = document.querySelector('input').value;
+    if(message === '') return;
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message');
+    messageContainer.classList.add('sent');
+    messageContainer.innerHTML = `<p>${message}</p>`;
+    document.querySelector('.message-container').appendChild(messageContainer);
+    document.querySelector('input').value = '';
+    socket.emit('message', message);
+  }
+  document.getElementById("messageInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      console.log("object");
+        event.preventDefault();
+        document.getElementById("sendmessage").click();
+      }
+    });
+
+  document.getElementById('sendmessage').addEventListener('click',sendMessage);
+  socket.on('message', (message) => {
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message');
+    messageContainer.classList.add('received');
+    messageContainer.innerHTML = `<p>${message}</p>`;
+    document.querySelector('.message-container').appendChild(messageContainer);
+  });
+</script>
+</html>
